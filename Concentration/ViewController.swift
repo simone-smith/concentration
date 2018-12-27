@@ -12,13 +12,8 @@ class ViewController: UIViewController {
     
     lazy var game = Concentration(numberOfPairsOfCards: (cardButtons.count + 1) / 2)
     
-    var flipCount = 0 {
-        didSet {
-            flipCountLabel.text = "Flips: \(flipCount)"
-        }
-    }
-    
     @IBOutlet weak var flipCountLabel: UILabel!
+    @IBOutlet weak var scoreLabel: UILabel!
     @IBOutlet weak var newGameButton: UIButton!
     @IBOutlet var cardButtons: [UIButton]!
     
@@ -46,13 +41,14 @@ class ViewController: UIViewController {
     }
     
     @IBAction func touchCard(_ sender: UIButton) {
-        flipCount += 1
         if let cardNumber = cardButtons.index(of: sender) {
             game.chooseCard(at: cardNumber)
             updateViewFromModel()
         } else {
             print("Chosen card was not in cardButtons")
         }
+        scoreLabel.text = "Score: \(game.score)"
+        flipCountLabel.text = "Flips: \(game.flipCount)"
     }
     
     func updateViewFromModel() {
@@ -78,7 +74,10 @@ class ViewController: UIViewController {
     }
     
     @IBAction func startNewGame(_ sender: UIButton) {
-        flipCount = 0
+        game.flipCount = 0
+        game.score = 0
+        scoreLabel.text = "Score: 0"
+        flipCountLabel.text = "Flips: 0"
         emojiChoices += emoji.values
         emoji = [Int:String]()
         for index in cardButtons.indices {
