@@ -22,6 +22,29 @@ class ViewController: UIViewController {
     @IBOutlet weak var newGameButton: UIButton!
     @IBOutlet var cardButtons: [UIButton]!
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setRandomTheme()
+    }
+    
+    var emojiChoices = [String]()
+    var emoji = [Int:String]()
+
+    func setRandomTheme() {
+        var themes = [
+            "halloween": ["🦇", "😱", "🙀", "😈", "🎃", "👻", "🍭", "🍬", "🍎"],
+            "breakfast": ["🥑", "🍳", "🥐", "🥓", "🍌", "🍞", "🥞", "☕️", "🥛"],
+            "sport": ["⚽️", "🏀", "🏈", "⚾️", "🎾", "🏐", "🏉", "🎱", "🏓"],
+            "vehicles": ["🚗", "🚕", "🚙", "🚌", "🚎", "🏎", "🚓", "🚑", "🚒"],
+            "hearts": ["❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "💔", "💖"],
+            "clothes": ["👚", "👕", "👖", "👔", "👗", "👙", "👘", "👠", "👡"]
+        ]
+        
+        let themeKeys = Array(themes.keys)
+        let themeIndex = Int(arc4random_uniform(UInt32(themeKeys.count)))
+        emojiChoices = Array(themes.values)[themeIndex]
+    }
+    
     @IBAction func touchCard(_ sender: UIButton) {
         flipCount += 1
         if let cardNumber = cardButtons.index(of: sender) {
@@ -46,19 +69,6 @@ class ViewController: UIViewController {
         }
     }
     
-    @IBAction func startNewGame(_ sender: UIButton) {
-        flipCount = 0
-        for index in cardButtons.indices {
-            let button = cardButtons[index]
-            button.setTitle("", for: .normal)
-            button.backgroundColor = #colorLiteral(red: 1, green: 0.5781051517, blue: 0, alpha: 1)
-        }
-        game.newGame()
-    }
-    
-    var emojiChoices = ["🦇", "😱", "🙀", "😈", "🎃", "👻", "🍭", "🍬", "🍎"]
-    var emoji = [Int:String]()
-    
     func emoji(for card: Card) -> String {
         if emoji[card.identifier] == nil, emojiChoices.count > 0 {
             let randomIndex = Int(arc4random_uniform(UInt32(emojiChoices.count)))
@@ -67,4 +77,16 @@ class ViewController: UIViewController {
         return emoji[card.identifier] ?? "?"
     }
     
+    @IBAction func startNewGame(_ sender: UIButton) {
+        flipCount = 0
+        emojiChoices += emoji.values
+        emoji = [Int:String]()
+        for index in cardButtons.indices {
+            let button = cardButtons[index]
+            button.setTitle("", for: .normal)
+            button.backgroundColor = #colorLiteral(red: 1, green: 0.5781051517, blue: 0, alpha: 1)
+        }
+        game.newGame()
+        setRandomTheme()
+    }
 }
